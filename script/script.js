@@ -4,7 +4,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const cartBtn = document.getElementById('cart');
     const wishlistBtn = document.getElementById('wishlist');
     const goodsWrapper = document.querySelector('.goods-wrapper');
-    const cart = document.querySelector('.cart');    
+    const cart = document.querySelector('.cart');
+    const category = document.querySelector('.category'); // переменная для фильтра по категориям
+
     
     const createCardGoods = (id, title, price, img) => {
         const card = document.createElement('div');        
@@ -28,6 +30,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>`;
         return card;
     };
+
+    
     
     goodsWrapper.appendChild(createCardGoods(1, 'Дартс', 2000, 'img/temp/Archer.jpg'));
     goodsWrapper.appendChild(createCardGoods(2, 'Фламинго', 3000, 'img/temp/Flamingo.jpg'));
@@ -35,31 +39,65 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Закрытие корзины по клику на крестик или серое поле
 
-    const closeCart = (event) => {
+    const closeCart = event => {
         const target = event.target;
         
-        if (target === cart || target.classList.contains('cart-close')) {
-            event.preventDefault();
-            cart.style.display = '';
-        }        
+        if (target === cart ||
+            target.classList.contains('cart-close') ||
+            event.keyCode === 27) {
+                event.preventDefault(); // Отменяет стандартное поведение ссылки #
+                cart.style.display = ''; // удаляем flex у модалки
+                document.removeEventListener('keyup', closeCart);  //  удаляем отслеживание события 'keyup'
+        };        
     };
 
-    // Закрытие корзины по кнопке Esc
+    // Открытие корзины
 
-    window.addEventListener('keydown', function (evt) {
-        if (evt.keyCode === 27) {
-            evt.preventDefault();
-            cart.style.display = '';
+    const openCart = event => {
+        event.preventDefault();
+        cart.style.display = 'flex'; // вешаем свойство display: flex; корзине
+        document.addEventListener('keyup', closeCart);  // отслеживаем событие для закрытия
+    };
+
+    const renderCard = items => { // функция принимает товар и обрабатывает    
+        goodsWrapper.textContent = '';   
+        items.forEach(({ id, title, price, imgMin }) => { // передаем объект в {} в помощью диструктивного присвоения
+
+            goodsWrapper.append(createCardGoods(id, title, price, imgMin));
+            
+        }); 
+            
+    };
+
+    const getGoods = (handler, filter) => { // функция получает товар,
+        fetch('db/db.json') // fetch API делает запрос на сервер и возвращает promis
+            .then(response => response.json()) // берет данные методом json и данные переводит в массив и делает return
+            .then(filter)
+            .then(handler);
+    };
+
+
+    const randomSort = item => {
+        return item.sort(() => Math.random() - 0.5);
+    }
+
+
+    const chooseCategory = event => {
+        event.preventDefault();
+        const target = event.target;
+
+        if (target.classList.contains('category-item')) {  
+            const category = target.dataset.category;          
+            getGoods(renderCard, goods => goods.filter(item => item.category.includes(category)))
         }
-    });
-    
-    // открытие корзины
-
-    const openCart = () => {
-        cart.style.display = 'flex';
     };
+
 
     cartBtn.addEventListener('click', openCart);
     cart.addEventListener('click', closeCart);
+    category.addEventListener('click', chooseCategory);
+    
+
+    getGoods(renderCard, randomSort);
 
 });
