@@ -95,8 +95,9 @@ document.addEventListener('DOMContentLoaded', function() {
     getGoods(renderCard, randomSort);
 
     window.onload = function() {
-        this.document.getElementById('hide-spiner').style.display='none'
-        this.document.querySelector('.goods-wrapper').style.opacity='1' 
+        setTimeout(function () {
+            this.document.getElementById('hide-spiner').style.display='none'
+            this.document.querySelector('.goods-wrapper').style.opacity='1'        
+        }, 1000);
     };
-
 });
