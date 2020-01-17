@@ -661,6 +661,14 @@ nav {
     background-color: #fff;
     border-radius: 8px;
     margin-bottom: 10px;
+    animation: 0.5s ease;
+
+    &-wrapper {
+      // display: flex;
+      opacity: 0;
+      // transition: .5s;
+    }
+
 
     &-img {
       max-width: 120px;

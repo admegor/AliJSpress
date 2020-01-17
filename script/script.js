@@ -29,13 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             </div>`;
         return card;
-    };
-
-    
-    
-    goodsWrapper.appendChild(createCardGoods(1, 'Дартс', 2000, 'img/temp/Archer.jpg'));
-    goodsWrapper.appendChild(createCardGoods(2, 'Фламинго', 3000, 'img/temp/Flamingo.jpg'));
-    goodsWrapper.appendChild(createCardGoods(3, 'Носки', 333, 'img/temp/Socks.jpg'));
+    };   
 
     // Закрытие корзины по клику на крестик или серое поле
 
@@ -99,5 +93,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
 
     getGoods(renderCard, randomSort);
+
+    window.onload = function() {
+        this.document.getElementById('hide-spiner').style.display='none'
+        this.document.querySelector('.goods-wrapper').style.opacity='1' 
+    };
 
 });
