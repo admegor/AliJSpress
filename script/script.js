@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const wishlist = [];
 
-    let goodsBasket = {};
+    const goodsBasket = {};
 
     const loading = (nameFunction) => {
         const spinner = `<div id="spinner"><div class="spinner-loading"><div><div><div></div>
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (nameFunction === 'renderBasket') {
-            cardWrapper.innerHTML = spinner;
+            cartWrapper.innerHTML = spinner;
         }
     };
 
@@ -117,7 +117,19 @@ document.addEventListener('DOMContentLoaded', function() {
         };        
     };
 
-    const showCardBasket = goods => goods.filter(item => goodsBasket.hasOwnProperty(item.id));
+    const calcTotalPrice = goods => {
+        let sum = 0;
+        for (const item of goods) {
+            sum += item.price * goodsBasket[item.id];
+        }
+        cart.querySelector('.cart-total>span').textContent = sum.toFixed(2);
+    };
+
+    const showCardBasket = goods => {
+        const basketGoods = goods.filter(item => goodsBasket.hasOwnProperty(item.id));
+        calcTotalPrice(basketGoods);
+        return basketGoods;
+    };
 
     // Открытие корзины
 
@@ -183,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const cookieQuery = get => {
         if (get) {
             if (getCookie('goodsBasket')) {
-                goodsBasket = JSON.parse(getCookie('goodsBasket'));
+                Object.assign(goodsBasket, JSON.parse(getCookie('goodsBasket')));                
             }            
             checkCount();
         } else {
@@ -203,11 +215,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (get) {
             if (localStorage.getItem('wishlist')) {
-                const wishlistStorage = JSON.parse(localStorage.getItem('wishlist'));
-                wishlistStorage.forEach(id => wishlist.push(id));
-                checkCount();
+                wishlist.push(...JSON.parse(localStorage.getItem('wishlist')));                
             }
-            
+            checkCount();
         } else {
             localStorage.setItem('wishlist', JSON.stringify(wishlist));
         }
