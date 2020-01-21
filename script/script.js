@@ -14,9 +14,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let goodsBasket = {};
 
-    const loading = () => {
-        goodsWrapper.innerHTML = `<div id="spinner"><div class="spinner-loading"><div><div><div></div>
-        </div><div><div></div></div><div><div></div></div><div><div></div></div></div></div></div>`
+    const loading = (nameFunction) => {
+        const spinner = `<div id="spinner"><div class="spinner-loading"><div><div><div></div>
+        </div><div><div></div></div><div><div></div></div><div><div></div></div></div></div></div>`;
+
+        if (nameFunction === 'renderCard') {
+            goodsWrapper.innerHTML = spinner;
+        }
+
+        if (nameFunction === 'renderBasket') {
+            cardWrapper.innerHTML = spinner;
+        }
     };
 
     
@@ -77,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         data-goods-id="${id}"></button>
                                     <button class="goods-delete" data-goods-id="${id}"></button>
                                 </div>
-                                <div class="goods-count">1</div>
+                                <div class="goods-count">${goodsBasket[id]}</div>
                             </div>`;
         return card;
     };   
@@ -109,7 +117,6 @@ document.addEventListener('DOMContentLoaded', function() {
         };        
     };
 
-
     const showCardBasket = goods => goods.filter(item => goodsBasket.hasOwnProperty(item.id));
 
     // Открытие корзины
@@ -121,13 +128,8 @@ document.addEventListener('DOMContentLoaded', function() {
         getGoods(renderBasket, showCardBasket);
     };
 
-
-    
-
-   
-
     const getGoods = (handler, filter) => { // функция получает товар,
-        // loading();
+        loading(handler.name);
         fetch('db/db.json') // fetch API делает запрос на сервер и возвращает promis
             .then(response => response.json()) // берет данные методом json и данные переводит в массив и делает return
             .then(filter)
@@ -180,7 +182,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const cookieQuery = get => {
         if (get) {
-            goodsBasket = JSON.parse(getCookie('goodsBasket'));
+            if (getCookie('goodsBasket')) {
+                goodsBasket = JSON.parse(getCookie('goodsBasket'));
+            }            
             checkCount();
         } else {
             document.cookie = `goodsBasket=${JSON.stringify(goodsBasket)};max-age=86400e3`;
